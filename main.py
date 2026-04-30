@@ -9,9 +9,12 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 
 # ========================
-# 環境変数から取得（重要）
+# 環境変数（必須）
 # ========================
-SPREADSHEET_ID = os.environ["SPREADSHEET_ID"]
+SPREADSHEET_ID = os.environ.get("SPREADSHEET_ID")
+if not SPREADSHEET_ID:
+    raise RuntimeError("SPREADSHEET_ID が設定されていません")
+
 CELL = "F4"
 DPI = 200
 WORK_DIR = "./pdf_work"
@@ -20,7 +23,7 @@ LOG_SHEET_NAME = "ログ"
 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 # ========================
-# Service Account（安全）
+# Service Account
 # ========================
 creds = Credentials.from_service_account_info(
     json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT"]),
@@ -38,7 +41,7 @@ drive = build("drive", "v3", credentials=creds)
 def log(action, memo=""):
     log_sheet.append_row([now, action, memo])
 
-log("開始", "PDFフラット化（再帰・圧縮・容量制限）")
+log("開始", "PDFフラット化（再帰・圧縮）")
 
 def list_pdfs_recursive(folder_id):
     pdfs = []
@@ -74,7 +77,7 @@ def flatten_pdf(input_path, output_path):
     dst.close()
 
 # ========================
-# フォルダID取得（安全）
+# フォルダID取得
 # ========================
 folder_url = sh.sheet1.acell(CELL).value
 match = re.search(r"folders/([a-zA-Z0-9_-]+)", folder_url)

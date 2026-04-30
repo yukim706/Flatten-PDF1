@@ -4,9 +4,12 @@ on:
   # 🧪 手動実行
   workflow_dispatch:
 
-  # ✅ 本番（6時間おき：JST 0 / 6 / 12 / 18 時）
+  # ✅ 本番（JST 5:10 / 12:10 / 16:00 / 21:10）
   schedule:
-    - cron: '0 15,21,3,9 * * *'
+    - cron: '10 20 * * *'  # JST 5:10
+    - cron: '10 3 * * *'   # JST 12:10
+    - cron: '0 7 * * *'    # JST 16:00
+    - cron: '10 12 * * *'  # JST 21:10
 
 jobs:
   run:
@@ -30,3 +33,4 @@ jobs:
         env:
           GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+``
